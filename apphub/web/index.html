@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0xRemnant App Hub — your personal app shelf</title>
+  <meta name="description" content="A free, self-hosted home for your web apps. Upload HTML or a ZIP project and open your app in one workspace.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <section id="auth" class="auth-screen" hidden>
+    <div class="auth-card">
+      <div class="brand-mark large" aria-hidden="true">a<span>h</span></div>
+      <div class="eyebrow">YOUR PERSONAL APP SHELF</div>
+      <h1 id="auth-title">Welcome home.</h1>
+      <p id="auth-copy">Sign in to your App Hub.</p>
+      <form id="auth-form">
+        <div id="setup-token-field" hidden><label for="setup-token">First-run setup token</label><input id="setup-token" name="setup-token" autocomplete="off" spellcheck="false"><p class="field-hint">Read it in your VM terminal:<br><code>sudo sh compose.sh exec hub python -m apphub.server --show-setup-token</code></p></div>
+        <label for="password">Owner password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <p id="auth-error" class="form-error" role="alert"></p>
+        <button class="button primary full" type="submit" id="auth-submit">Open workspace <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="auth-foot">Self-hosted. Free. Yours.</div>
+    </div>
+  </section>
+  <div id="shell" class="shell" hidden>
+    <aside class="sidebar">
+      <a href="#" class="brand" id="brand-home"><div class="brand-mark" aria-hidden="true">a<span>h</span></div><span>0xRemnant<span class="brand-caption">APP HUB</span></span></a>
+      <button class="nav-item selected" id="nav-home"><span class="nav-symbol">▦</span> Overview</button>
+      <div class="nav-heading">YOUR APPS <span id="sidebar-count">0</span></div>
+      <nav id="app-nav" aria-label="Apps"></nav>
+      <button class="nav-add" id="sidebar-upload"><span>＋</span> Add an app</button>
+      <div class="sidebar-bottom"><div class="local-badge"><span class="dot mint"></span> LOCAL WORKSPACE</div><p>One box. All your apps.</p><button class="text-button" id="signout">Sign out ↗</button></div>
+    </aside>
+    <main>
+      <header class="topbar"><div><span class="breadcrumb">Workspace</span><span class="breadcrumb-divider">/</span><span id="page-label">Overview</span></div><div class="server-badge"><span id="docker-dot" class="dot"></span><span id="server-address"></span></div></header>
+      <nav id="tabs" class="tabs" aria-label="Open apps"><button class="tab active" data-tab="home">▦ &nbsp; Overview</button></nav>
+      <section id="home" class="home">
+        <div class="page-heading"><div><div class="eyebrow">A LITTLE HOME FOR EVERYTHING YOU BUILD</div><h1>Your apps, together<span class="mint-text">.</span></h1><p>Drop in HTML or a ZIP. Give your next idea a home.</p></div><button class="button primary" id="upload-button"><span aria-hidden="true">＋</span> Upload app</button></div>
+        <div id="docker-warning" class="notice" hidden>Docker isn’t available. Start App Hub with the included Docker Compose setup to deploy apps.</div>
+        <div class="stats"><div><span class="stat-label"><span class="dot mint"></span> RUNNING NOW</span><strong id="stat-running">0</strong><span class="stat-note">apps ready to open</span></div><div><span class="stat-label">▦ &nbsp; ON YOUR SHELF</span><strong id="stat-total">0</strong><span class="stat-note">installed applications</span></div><div><span class="stat-label">↗ &nbsp; SAVED VERSIONS</span><strong id="stat-versions">0</strong><span class="stat-note">successful deployments</span></div></div>
+        <div class="section-heading"><h2>App shelf <span id="shelf-count">0</span></h2><div class="shelf-tools"><input id="search" type="search" placeholder="Search your apps…" aria-label="Search apps"><select id="filter" aria-label="Filter by status"><option value="all">All apps</option><option value="running">Running</option><option value="stopped">Stopped</option><option value="failed">Needs attention</option></select></div></div>
+        <div id="app-grid" class="app-grid"></div>
+        <div id="empty" class="empty" hidden><div class="empty-icon" aria-hidden="true">＋</div><h2>Your next idea belongs here.</h2><p>Upload a standalone HTML file, or a ZIP with a React/Vite app or Dockerfile.</p><button class="button primary" id="empty-upload">Upload your first app <span aria-hidden="true">→</span></button><button class="text-button" id="download-example">Try it with an example ZIP ↓</button></div>
+        <div id="no-results" class="no-results" hidden>No apps match your search.</div>
+        <footer><span><span class="dot mint"></span> Made for your own little corner of the internet.</span><span>0xREMNANT APP HUB <span class="version">v1.0.0 · MIT LICENSE</span></span></footer>
+      </section>
+      <div id="panes"></div>
+    </main>
+  </div>
+  <dialog id="upload-dialog" class="modal">
+    <form id="upload-form">
+      <div class="modal-heading"><div><div class="eyebrow">FROM IDEA TO APP</div><h2 id="upload-title">Give your app a home.</h2></div><button type="button" class="icon-button" data-close="upload-dialog" aria-label="Close">×</button></div>
+      <p class="muted" id="upload-copy">Choose a standalone HTML file or a ZIP project.</p>
+      <label class="dropzone" id="dropzone" for="zip-file"><span class="drop-symbol" aria-hidden="true">⇧</span><strong id="file-label">Drop your HTML file or ZIP here</strong><span id="file-size">or click to browse · HTML or ZIP · up to 100 MB</span><input type="file" id="zip-file" accept=".html,.htm,.zip,text/html,application/zip" required></label>
+      <label for="app-name">App name</label><input id="app-name" required maxlength="80" placeholder="My brilliant little app">
+      <details id="advanced"><summary>App settings <span class="muted">optional</span></summary><div class="form-row"><div><label for="app-type">App type</label><select id="app-type"><option value="auto">Detect automatically</option><option value="static">Static / React / Vite</option><option value="node">Node server</option><option value="docker">Custom Dockerfile</option></select></div><div><label for="internal-port">Internal port</label><input id="internal-port" type="number" min="1" max="65535" placeholder="Automatic"></div></div><label for="environment">Environment settings</label><textarea id="environment" rows="4" placeholder="API_KEY=your-key&#10;DATABASE_PATH=/data/app.db" spellcheck="false"></textarea><p class="field-hint" id="env-hint">One KEY=value per line. Store lasting files in /data. Uploaded .env files are excluded.</p></details>
+      <div id="upload-progress" class="notice" aria-live="polite" hidden></div><p id="upload-error" class="form-error" role="alert"></p>
+      <div class="modal-actions"><button type="button" class="button secondary" data-close="upload-dialog">Cancel</button><button type="submit" class="button primary" id="deploy-submit">Deploy app <span aria-hidden="true">↗</span></button></div>
+    </form>
+  </dialog>
+  <dialog id="log-dialog" class="modal log-modal"><div class="modal-heading"><div><div class="eyebrow">BEHIND THE SCENES</div><h2 id="log-title">Deployment</h2></div><button class="icon-button" data-close="log-dialog" aria-label="Close">×</button></div><div id="log-status" class="log-status"></div><pre id="log-content" tabindex="0"></pre><div class="modal-actions"><button id="copy-log" class="button secondary">Copy log</button><button class="button primary" data-close="log-dialog">Done</button></div></dialog>
+  <dialog id="versions-dialog" class="modal"><div class="modal-heading"><div><div class="eyebrow">KEEP THE GOOD VERSIONS</div><h2 id="versions-title">Version history</h2></div><button class="icon-button" data-close="versions-dialog" aria-label="Close">×</button></div><p class="muted">Restore an app version and its environment settings. Saved files and databases stay as they are.</p><div id="versions-list"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

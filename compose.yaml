@@ -1,0 +1,36 @@
+name: apphub
+services:
+  hub:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${APPHUB_BIND_IP:-0.0.0.0}:${APPHUB_PORT:-8080}:8080"
+    environment:
+      APPHUB_DATA: /data
+      APPHUB_PORT: "8080"
+      APPHUB_PUBLIC_PORT: ${APPHUB_PORT:-8080}
+      APPHUB_PORT_START: ${APPHUB_PORT_START:-10000}
+      APPHUB_PORT_END: ${APPHUB_PORT_END:-10999}
+      APPHUB_BIND_IP: ${APPHUB_BIND_IP:-0.0.0.0}
+      APPHUB_NETWORK: apphub-runtime
+      APPHUB_ALLOWED_HOSTS: ${APPHUB_ALLOWED_HOSTS:-}
+      APPHUB_APP_MEMORY: ${APPHUB_APP_MEMORY:-512m}
+      APPHUB_APP_CPUS: ${APPHUB_APP_CPUS:-1}
+      APPHUB_START_TIMEOUT: ${APPHUB_START_TIMEOUT:-90}
+    volumes:
+      - hub-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - runtime
+    stop_grace_period: 16m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  hub-data:
+    name: apphub-hub-data
+networks:
+  runtime:
+    name: apphub-runtime

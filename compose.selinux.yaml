@@ -1,0 +1,7 @@
+# The management container already controls Docker through its API socket.
+# Permit that socket access without relabeling the host socket or changing
+# system-wide SELinux enforcement. App containers retain their normal settings.
+services:
+  hub:
+    security_opt:
+      - label=disable
